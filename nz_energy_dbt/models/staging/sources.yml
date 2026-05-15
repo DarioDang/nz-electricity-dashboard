@@ -1,8 +1,3 @@
-# ============================================================
-# sources.yml
-# Declares raw Postgres tables as dbt sources
-# Allows {{ source('em6', 'table_name') }} in models
-# ============================================================
 version: 2
 
 sources:
@@ -11,62 +6,97 @@ sources:
     database: nz_energy
     schema: public
     tables:
+
       - name: carbon_intensity
         description: "NZ grid carbon intensity per 30-min trading period"
         columns:
           - name: timestamp
-            description: "UTC timestamp of trading period end"
+            tests:
+              - not_null
+              - unique
           - name: trading_period
-            description: "Trading period number 1-48"
+            tests:
+              - not_null
           - name: nz_renewable
-            description: "% of NZ generation from renewable sources"
+            tests:
+              - not_null
 
       - name: node_prices
         description: "Spot prices at 6 key NZ grid nodes per trading period"
         columns:
-          - name: timestamp
-            description: "UTC timestamp of trading period"
           - name: node_id
-            description: "Grid node code e.g. OTA2201, HAY2201, BEN2201"
+            tests:
+              - not_null
+              - accepted_values:
+                  values: ['OTA2201','HAY2201','BEN2201',
+                           'WKM2201','KIK2201','ISL2201']
           - name: price
-            description: "Spot price in NZD/MWh"
+            tests:
+              - not_null
+          - name: timestamp
+            tests:
+              - not_null
 
       - name: regional_prices
         description: "Average spot price per NZ grid region per trading period"
         columns:
           - name: timestamp
-            description: "UTC timestamp of trading period"
+            tests:
+              - not_null
           - name: grid_zone_id
-            description: "FK to grid_zones reference table"
+            tests:
+              - not_null
           - name: price
-            description: "Average spot price in NZD/MWh"
+            tests:
+              - not_null
 
       - name: generation_forecast
         description: "Wind and solar generation forecast per region"
         columns:
           - name: timestamp
-            description: "UTC timestamp of trading period"
+            tests:
+              - not_null
           - name: generation_type
-            description: "WIN = Wind, SOL = Solar"
+            tests:
+              - not_null
+              - accepted_values:
+                  values: ['WIN', 'SOL']
           - name: region
-            description: "NI = North Island, SI = South Island, NZ = Nationwide"
+            tests:
+              - not_null
+              - accepted_values:
+                  values: ['NI', 'SI', 'NZ']
 
       - name: reserve_prices
         description: "Fast and sustained reserve prices for NI and SI"
         columns:
           - name: timestamp
-            description: "UTC timestamp of trading period"
+            tests:
+              - not_null
+          - name: region
+            tests:
+              - not_null
+              - accepted_values:
+                  values: ['NI', 'SI']
           - name: sir_price
-            description: "Sustained Instantaneous Reserve price NZD/MWh"
+            tests:
+              - not_null
           - name: fir_price
-            description: "Fast Instantaneous Reserve price NZD/MWh"
-      
+            tests:
+              - not_null
+
       - name: grid_zones
         description: "Static reference table for NZ grid zones"
         columns:
           - name: grid_zone_id
-            description: "Numeric zone ID"
+            tests:
+              - not_null
+              - unique
           - name: grid_zone_name
-            description: "Human readable zone name"
+            tests:
+              - not_null
           - name: island
-            description: "NI or SI"
+            tests:
+              - not_null
+              - accepted_values:
+                  values: ['NI', 'SI']
