@@ -1,0 +1,92 @@
+version: 2
+
+models:
+  - name: stg_em6__carbon_intensity
+    description: "Cleaned carbon intensity with NZT timestamps and labels"
+    columns:
+      - name: timestamp_utc
+        tests:
+          - not_null
+          - unique
+      - name: trading_period
+        tests:
+          - not_null
+      - name: renewable_pct
+        tests:
+          - not_null
+
+  - name: stg_em6__node_prices
+    description: "Node prices enriched with city names and island"
+    columns:
+      - name: timestamp_utc
+        tests:
+          - not_null
+      - name: node_id
+        tests:
+          - not_null
+          - accepted_values:
+              values: ['OTA2201','HAY2201','BEN2201',
+                       'WKM2201','KIK2201','ISL2201']
+      - name: city_name
+        tests:
+          - not_null
+      - name: island
+        tests:
+          - not_null
+          - accepted_values:
+              values: ['NI', 'SI']
+
+  - name: stg_em6__regional_prices
+    description: "Regional prices joined with grid zone metadata"
+    columns:
+      - name: timestamp_utc
+        tests:
+          - not_null
+      - name: grid_zone_id
+        tests:
+          - not_null
+      - name: grid_zone_name
+        tests:
+          - not_null
+      - name: price_nzd_mwh
+        tests:
+          - not_null
+
+  - name: stg_em6__generation_forecast
+    description: "Wind and solar forecast with accuracy metrics"
+    columns:
+      - name: timestamp_utc
+        tests:
+          - not_null
+      - name: generation_type
+        tests:
+          - not_null
+          - accepted_values:
+              values: ['WIN', 'SOL']
+      - name: region
+        tests:
+          - not_null
+          - accepted_values:
+              values: ['NI', 'SI', 'NZ']
+      - name: generation_label
+        tests:
+          - not_null
+          - accepted_values:
+              values: ['Wind', 'Solar']
+
+  - name: stg_em6__reserve_prices
+    description: "Reserve prices with grid stress indicator"
+    columns:
+      - name: timestamp_utc
+        tests:
+          - not_null
+      - name: region
+        tests:
+          - not_null
+          - accepted_values:
+              values: ['NI', 'SI']
+      - name: grid_stress
+        tests:
+          - not_null
+          - accepted_values:
+              values: ['Normal', 'Medium', 'High']
