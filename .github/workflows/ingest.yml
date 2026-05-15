@@ -9,53 +9,62 @@ name: NZ Energy Ingest
 
 on:
   schedule:
-    # Every 30 minutes, all day every day
-    # GitHub Actions uses UTC
     - cron: "*/30 * * * *"
-
-  # Allow manual trigger from GitHub UI
   workflow_dispatch:
+
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 
 jobs:
   ingest:
     name: Extract Transform Load
     runs-on: ubuntu-latest
-    timeout-minutes: 10       # kill if hanging
+    timeout-minutes: 10
+
+    services:
+      postgres:
+        image: postgres:15
+        env:
+          POSTGRES_DB:       nz_energy
+          POSTGRES_USER:     postgres
+          POSTGRES_PASSWORD: postgres
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
 
     steps:
-
-      # --------------------------------------------------------
-      # 1. Check out the repo
-      # --------------------------------------------------------
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      # --------------------------------------------------------
-      # 2. Set up Python 3.10
-      # --------------------------------------------------------
       - name: Set up Python 3.10
         uses: actions/setup-python@v5
         with:
-          python-version: "3.10.0"
-          cache: "pip"          # cache pip dependencies
+          python-version: "3.10"
+          cache: "pip"
 
-      # --------------------------------------------------------
-      # 3. Install dependencies
-      # --------------------------------------------------------
       - name: Install dependencies
         run: pip install -r requirements.txt
 
-      # --------------------------------------------------------
-      # 4. Run ingest flow
-      # Prefect picks up env vars automatically
-      # --------------------------------------------------------
+      - name: Set up database schema
+        env:
+          PGPASSWORD: postgres
+        run: |
+          psql -h localhost -U postgres -d nz_energy \
+            -f database/schema.sql
+          psql -h localhost -U postgres -d nz_energy \
+            -f database/seed.sql
+
       - name: Run ingest flow
         env:
           PREFECT_API_KEY:  ${{ secrets.PREFECT_API_KEY }}
           PREFECT_API_URL:  ${{ secrets.PREFECT_API_URL }}
-          DB_HOST:          ${{ secrets.DB_HOST }}
-          DB_PORT:          ${{ secrets.DB_PORT }}
-          DB_NAME:          ${{ secrets.DB_NAME }}
-          DB_USER:          ${{ secrets.DB_USER }}
-          DB_PASSWORD:      ${{ secrets.DB_PASSWORD }}
+          DB_HOST:          localhost
+          DB_PORT:          5432
+          DB_NAME:          nz_energy
+          DB_USER:          postgres
+          DB_PASSWORD:      postgres
         run: python pipeline/flows/ingest_flow.py
