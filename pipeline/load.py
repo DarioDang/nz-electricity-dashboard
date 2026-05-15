@@ -36,18 +36,32 @@ logger = logging.getLogger(__name__)
 # ============================================================
 def get_connection():
     """
-    Create and return a Postgres connection using .env credentials.
-    Caller is responsible for closing the connection.
+    Create Postgres connection.
+    Uses NEON_DB_* variables if available (production/GitHub Actions)
+    Falls back to DB_* variables (local Docker)
     """
+    neon_host = os.getenv("NEON_DB_HOST")
 
-    conn = psycopg2.connect(
-        host=os.getenv("DB_HOST", "localhost"),
-        port=os.getenv("DB_PORT", 5432),
-        dbname=os.getenv("DB_NAME", "nz_energy"),
-        user=os.getenv("DB_USER", "postgres"),
-        password=os.getenv("DB_PASSWORD", "postgres")
-    )
-    logger.info("Database connection established")
+    if neon_host:
+        conn = psycopg2.connect(
+            host=neon_host,
+            port=os.getenv("NEON_DB_PORT", 5432),
+            dbname=os.getenv("NEON_DB_NAME", "neondb"),
+            user=os.getenv("NEON_DB_USER"),
+            password=os.getenv("NEON_DB_PASSWORD"),
+            sslmode=os.getenv("NEON_DB_SSLMODE", "require")
+        )
+        logger.info("Connected to Neon cloud Postgres")
+    else:
+        conn = psycopg2.connect(
+            host=os.getenv("DB_HOST", "localhost"),
+            port=os.getenv("DB_PORT", 5432),
+            dbname=os.getenv("DB_NAME", "nz_energy"),
+            user=os.getenv("DB_USER", "postgres"),
+            password=os.getenv("DB_PASSWORD", "postgres")
+        )
+        logger.info("Connected to local Docker Postgres")
+
     return conn
 
 
