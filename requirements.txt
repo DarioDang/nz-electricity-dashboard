@@ -1,0 +1,30 @@
+# ============================================================
+# NZ Electricity Dashboard — Python Dependencies
+# Python version: 3.10.0 (see .python-version)
+# Install: pip install -r requirements.txt
+# ============================================================
+
+# HTTP
+requests==2.32.3
+urllib3==2.2.3
+
+# Data processing
+pandas==2.2.3
+numpy==1.26.4
+
+# Database
+psycopg2-binary==2.9.9
+sqlalchemy==2.0.36
+
+# Environment
+python-dotenv==1.0.1
+
+# prefect
+prefect==3.7.0
+
+# dbt
+dbt-core==1.8.9
+dbt-postgres==1.8.2
+
+# Testing
+pytest==8.3.4
