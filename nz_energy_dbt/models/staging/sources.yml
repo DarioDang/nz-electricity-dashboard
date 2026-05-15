@@ -1,0 +1,72 @@
+# ============================================================
+# sources.yml
+# Declares raw Postgres tables as dbt sources
+# Allows {{ source('em6', 'table_name') }} in models
+# ============================================================
+version: 2
+
+sources:
+  - name: em6
+    description: "Raw tables ingested from em6 free API by Python pipeline"
+    database: nz_energy
+    schema: public
+    tables:
+      - name: carbon_intensity
+        description: "NZ grid carbon intensity per 30-min trading period"
+        columns:
+          - name: timestamp
+            description: "UTC timestamp of trading period end"
+          - name: trading_period
+            description: "Trading period number 1-48"
+          - name: nz_renewable
+            description: "% of NZ generation from renewable sources"
+
+      - name: node_prices
+        description: "Spot prices at 6 key NZ grid nodes per trading period"
+        columns:
+          - name: timestamp
+            description: "UTC timestamp of trading period"
+          - name: node_id
+            description: "Grid node code e.g. OTA2201, HAY2201, BEN2201"
+          - name: price
+            description: "Spot price in NZD/MWh"
+
+      - name: regional_prices
+        description: "Average spot price per NZ grid region per trading period"
+        columns:
+          - name: timestamp
+            description: "UTC timestamp of trading period"
+          - name: grid_zone_id
+            description: "FK to grid_zones reference table"
+          - name: price
+            description: "Average spot price in NZD/MWh"
+
+      - name: generation_forecast
+        description: "Wind and solar generation forecast per region"
+        columns:
+          - name: timestamp
+            description: "UTC timestamp of trading period"
+          - name: generation_type
+            description: "WIN = Wind, SOL = Solar"
+          - name: region
+            description: "NI = North Island, SI = South Island, NZ = Nationwide"
+
+      - name: reserve_prices
+        description: "Fast and sustained reserve prices for NI and SI"
+        columns:
+          - name: timestamp
+            description: "UTC timestamp of trading period"
+          - name: sir_price
+            description: "Sustained Instantaneous Reserve price NZD/MWh"
+          - name: fir_price
+            description: "Fast Instantaneous Reserve price NZD/MWh"
+      
+      - name: grid_zones
+        description: "Static reference table for NZ grid zones"
+        columns:
+          - name: grid_zone_id
+            description: "Numeric zone ID"
+          - name: grid_zone_name
+            description: "Human readable zone name"
+          - name: island
+            description: "NI or SI"

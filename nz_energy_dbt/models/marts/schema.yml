@@ -1,0 +1,81 @@
+# ============================================================
+# schema.yml
+# Documents all mart models and their columns
+# ============================================================
+version: 2
+
+models:
+  - name: mart_carbon_intensity
+    description: >
+      Latest carbon intensity and renewable metrics for the NZ grid.
+      Used by live dashboard panels - carbon gauge, renewable %,
+      grid stress indicator. One row per trading period (last 3 periods).
+    columns:
+      - name: timestamp_utc
+        description: "UTC timestamp of trading period"
+      - name: timestamp_nzt
+        description: "NZT timestamp for dashboard display"
+      - name: period_label
+        description: "Human readable period e.g: TP31 (15:00 NZT)"
+      - name: renewable_pct
+        description: "% of NZ generation from renewable sources."
+      - name: nz_carbon_gkwh
+        description: "Carbon intensity in gCO2/kWh"
+      - name: carbon_status
+        description: "Clean/Moderate/Dirty based on carbon intensity"
+      - name: vs_month_avg_pct
+        description: "Current intensity vs month average as %"
+  
+  - name: mart_node_prices
+    description: >
+      Last 24hrs spot prices for 6 key NZ grid nodes enriched with
+      city names and island classification. Used by the price trend
+      line chart and node comparison panels.
+    columns:
+      - name: timestamp_utc
+        description: "UTC timestamp of trading period"
+      - name: timestamp_nzt
+        description: "NZT timestamp for dashboard display"
+      - name: node_id
+        description: "Grid node code"
+      - name: city_name
+        description: "Human readable city name"
+      - name: price_nzd_mwh
+        description: "Spot price in NZD/MWh"
+      - name: price_category
+        description: "Low/Medium/High/Spike based on price level"
+
+  - name: mart_daily_summary
+    description: >
+      One row per calendar day with aggregated carbon, renewable,
+      and price metrics. Used by the historical trend charts.
+      Never purged — grows by 1 row per day forever.
+    columns:
+      - name: date_nzt
+        description: "NZ calendar date"
+      - name: avg_carbon_gkwh
+        description: "Daily average carbon intensity"
+      - name: avg_renewable_pct
+        description: "Daily average renewable generation %"
+      - name: avg_price_ota
+        description: "Daily average price at Auckland node"
+      - name: ni_si_spread
+        description: "Average Auckland-Benmore price spread"
+
+  - name: mart_ni_si_spread
+    description: >
+      North vs South Island price spread per trading period.
+      The OTA (Auckland) minus BEN (Benmore) difference is the key
+      NZ market signal — large spread indicates HVDC constraint.
+      Used by the spread indicator panel.
+    columns:
+      - name: timestamp_utc
+        description: "UTC timestamp of trading period"
+      - name: ota_price
+        description: "Auckland spot price NZD/MWh"
+      - name: ben_price
+        description: "Benmore spot price NZD/MWh"
+      - name: spread
+        description: "OTA minus BEN price spread NZD/MWh"
+      - name: spread_status
+        description: "Normal/Elevated/Constrained based on spread size"
