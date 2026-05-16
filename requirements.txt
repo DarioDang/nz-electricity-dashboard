@@ -26,5 +26,8 @@ prefect==3.7.0
 dbt-core==1.8.9
 dbt-postgres==1.8.2
 
+# streamlit
+streamlit==1.57.0
+
 # Testing
 pytest==8.3.4
