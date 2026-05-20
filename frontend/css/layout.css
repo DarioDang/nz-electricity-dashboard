@@ -1,0 +1,233 @@
+/* ============================================================
+   css/layout.css
+   Page structure — CSS Grid skeleton.
+   Controls WHERE things sit, not how they look.
+   ============================================================ */
+
+/* ── Page wrapper ──────────────────────────────────────── */
+#dashboard {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  width: 100%;
+}
+ 
+#dashboard.hidden {
+  display: none;
+}
+ 
+/* ── Loading screen ────────────────────────────────────── */
+#loading-screen {
+  position: fixed;
+  inset: 0;
+  background: var(--bg-page);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-3);
+  z-index: 9999;
+}
+ 
+.loading-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: var(--radius-full);
+  background: var(--teal);
+  display: inline-block;
+  animation: loadingBounce 1.4s ease-in-out infinite both;
+}
+ 
+.loading-dot:nth-child(1) { animation-delay: 0s; }
+.loading-dot:nth-child(2) { animation-delay: 0.16s; }
+.loading-dot:nth-child(3) { animation-delay: 0.32s; }
+ 
+/* Override — show dots in a row */
+#loading-screen {
+  flex-direction: column;
+  gap: 16px;
+}
+ 
+.loading-dots-row {
+  display: flex;
+  gap: 8px;
+}
+ 
+.loading-text {
+  font-family: var(--font-mono);
+  font-size: var(--text-sm);
+  color: var(--text-muted);
+  letter-spacing: 1px;
+}
+ 
+/* ── Header ────────────────────────────────────────────── */
+.dash-header {
+  background: var(--bg-header);
+  border-bottom: 1px solid var(--border-base);
+  padding: 14px var(--space-8);
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  animation: fadeInDown 0.6s ease both;
+}
+ 
+.header-left  { justify-self: start; display: flex; align-items: center; }
+.header-center { justify-self: center; text-align: center; }
+.header-right { justify-self: end; display: flex; align-items: center; gap: var(--space-3); }
+ 
+/* ── KPI section ───────────────────────────────────────── */
+.kpi-section {
+  padding: var(--space-5) var(--space-8);
+}
+ 
+.kpi-wrap {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: var(--space-4);
+}
+ 
+/* ── Section padding (chart rows, pipeline, profile) ───── */
+.section-pad {
+  padding: 0 var(--space-8) var(--space-8);
+}
+ 
+/* ── 3-column chart rows ───────────────────────────────── */
+.row-3col {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--space-4);
+  align-items: start;
+}
+ 
+/* ── Chart panel wrapper ───────────────────────────────── */
+.chart-panel {
+  display: flex;
+  flex-direction: column;
+  background: var(--bg-deep);
+  border: 1px solid var(--border-base);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  min-height: var(--chart-h-main);
+  transition: border-color var(--transition-base),
+              box-shadow var(--transition-base);
+  animation: cardSlideUp 0.6s ease both;
+}
+ 
+.chart-panel:hover {
+  border-color: var(--border-focus);
+  box-shadow: var(--shadow-card);
+}
+ 
+/* Row 2 panels are shorter */
+#row2 .chart-panel {
+  min-height: var(--chart-h-sub);
+}
+ 
+/* ── Panel header ──────────────────────────────────────── */
+.panel-header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: var(--space-2);
+  padding: var(--space-3) var(--space-4) var(--space-3);
+  border-bottom: 1px solid var(--border-base);
+}
+ 
+.panel-icon-wrap {
+  width: 34px;
+  height: 34px;
+  border-radius: var(--radius-full);
+  background: var(--bg-inset);
+  border: 1px solid var(--border-base);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: border-color var(--transition-base),
+              box-shadow var(--transition-base);
+}
+ 
+.panel-header:hover .panel-icon-wrap {
+  border-color: var(--teal);
+  box-shadow: 0 0 12px rgba(20,184,166,0.25);
+}
+ 
+.panel-icon-img {
+  width: 22px;
+  height: 22px;
+  object-fit: contain;
+}
+ 
+.panel-header-text {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+ 
+.panel-title {
+  font-family: var(--font-mono);
+  font-size: var(--text-md);
+  font-weight: 700;
+  color: var(--text-primary);
+  transition: color var(--transition-base);
+}
+ 
+.panel-header:hover .panel-title {
+  color: var(--teal);
+}
+ 
+.panel-sub {
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  color: var(--text-muted);
+}
+ 
+/* ── Map placeholder ───────────────────────────────────── */
+.map-placeholder {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 480px;
+}
+ 
+.placeholder-inner {
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-3);
+}
+ 
+.placeholder-icon {
+  font-size: 48px;
+  opacity: 0.4;
+}
+ 
+.placeholder-title {
+  font-family: var(--font-mono);
+  font-size: var(--text-md);
+  font-weight: 700;
+  color: var(--text-secondary);
+}
+ 
+.placeholder-sub {
+  font-family: var(--font-mono);
+  font-size: var(--text-sm);
+  color: var(--text-muted);
+}
+ 
+/* ── Footer ────────────────────────────────────────────── */
+.dash-footer {
+  margin-top: auto;
+  padding: 14px var(--space-8);
+  border-top: 1px solid var(--border-base);
+  display: flex;
+  justify-content: center;
+  font-family: var(--font-mono);
+  font-size: var(--text-sm);
+  color: var(--text-muted);
+}
