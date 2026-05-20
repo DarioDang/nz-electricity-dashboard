@@ -26,8 +26,8 @@ class CarbonLatest(Base):
     timestamp_nzt:           datetime
     trading_period:          int
     period_label:            str
-    nz_carbon_gkwh:          float
-    nz_carbon_change_gkwh:   float
+    nz_carbon_gkwh:          Optional[float]
+    nz_carbon_change_gkwh:   Optional[float]
     nz_carbon_t:             float
     renewable_pct:           float
     grid_status:             str
